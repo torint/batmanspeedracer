@@ -8,6 +8,12 @@
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
+    
+    color = side;
+    if (color == BLACK) {otherColor = WHITE;}
+    else {otherColor = BLACK;}
+    
+    board = Board();
 
     /* 
      * TODO: Do any initialization you need to do here (setting up the board,
@@ -39,6 +45,30 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */ 
-     //dragons are really cool
-    return NULL;
+     //dragons are really 
+     
+     board.doMove(opponentsMove, otherColor);
+     std::cerr << otherColor << ": (" << opponentsMove->getX() << ", " << opponentsMove->getY() << ")" << std::endl;
+     if (board.hasMoves(color))
+	 {
+		 Move *temp = new Move(-1, -1);
+		 for (int i = 0; i < 8; i++)
+		 {
+			 for (int j = 0; j < 8; j++)
+			 {
+				 temp->setX(i);
+				 temp->setY(j);
+				 if (board.checkMove(temp, color))
+				 {
+					 board.doMove(temp, color);
+					 std::cerr << color << ": (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
+					 return temp;
+				 }
+			 }
+			 
+		 }
+	 } 
+     
+     std::cerr << "FUCK" << std::endl;
+     return NULL;
 }

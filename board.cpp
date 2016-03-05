@@ -32,6 +32,9 @@ bool Board::occupied(int x, int y) {
     return taken[x + 8*y];
 }
 
+/*
+ * True if occupied by side.
+ */
 bool Board::get(Side side, int x, int y) {
     return occupied(x, y) && (black[x + 8*y] == (side == BLACK));
 }
