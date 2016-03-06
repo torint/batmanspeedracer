@@ -82,6 +82,7 @@ bool Board::checkMove(Move *m, Side side) {
 
     // Make sure the square hasn't already been taken.
     if (occupied(X, Y)) return false;
+    std::cerr << "not occupied" << std::endl;
 
     Side other = (side == BLACK) ? WHITE : BLACK;
     for (int dx = -1; dx <= 1; dx++) {
@@ -101,6 +102,7 @@ bool Board::checkMove(Move *m, Side side) {
             }
         }
     }
+    std::cerr << "no capture" << std::endl;
     return false;
 }
 
