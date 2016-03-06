@@ -28,6 +28,7 @@ public:
     void doMove(Move *m, Side side);
     int count(Side side);
     int score(Move *m, Side side);
+    Move *bestmove(Side side);
     int countBlack();
     int countWhite();
 

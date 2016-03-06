@@ -1,5 +1,7 @@
 #include "board.h"
-
+#define CORNER (3)
+#define ADJ (-2)
+#define EDGE (1)
 /*
  * Make a standard 8x8 othello board and initialize it to the standard setup.
  */
@@ -155,9 +157,111 @@ int Board::count(Side side) {
 
 int Board::score(Move *m, Side side)
 {
-	int base_score = (side == BLACK) ? (countBlack() - countWhite()) : (countWhite() - countBlack());
+	Board *check;
+	check = copy();
+	check->doMove(m, side);
+	int base_score = (side == BLACK) ? (check->countBlack() - check->countWhite()) : (check->countWhite() - check->countBlack());
+	for(int i = 0; i < 8; i++)
+	{
+		for(int j = 0; j < 8; j++)
+		{
+			// corners
+			if( ((i == 0) || (i == 7)) && ((j == 0) || (j == 7)) )
+			{
+				if(check->occupied(i, j))
+				{
+					if(check->get(side, i, j))
+					{
+						base_score = base_score + CORNER;
+					}
+					else
+					{
+						base_score = base_score - CORNER;
+					}
+				}
+			}
+			// adjacent to corners
+			else if( ((i == 0) || (i == 1) || (i == 6) || (i == 7)) && ((j == 0) || (j == 1) || (j == 6) || (j == 7)) )
+			{
+				if(check->occupied(i, j))
+				{
+					if(check->get(side, i, j))
+					{
+						base_score = base_score + ADJ;
+					}
+					else
+					{
+						base_score = base_score - ADJ;
+					}
+				}
+			}
+			// on the edges, but not corner or adjacent to corner
+			else if( ((i == 0) || (i == 7)) || ((j == 0) || (j == 7)) )
+			{
+				if(check->occupied(i, j))
+				{
+					if(check->get(side, i, j))
+					{
+						base_score = base_score + EDGE;
+					}
+					else
+					{
+						base_score = base_score - EDGE;
+					}
+				}
+			}			
+		}
+	}
+	delete check;
+	return base_score;			
+	
 }
-	 
+Move* Board::bestmove(Side side)
+{
+	 Move *temp = new Move(-1, -1);
+	 Side other = (side == BLACK) ? WHITE : BLACK;
+	 int bestX, bestY;
+	 int highscore = -10000;
+	 for (int i = 7; i >= 0; i--)
+	 {
+		 for (int j = 7; j >= 0; j--)
+		 {
+			 temp->setX(i);
+			 temp->setY(j);
+			 if (checkMove(temp, side)) 
+			 {
+				 int lowscore = 10000;
+				 Board *potential = copy();
+				 potential->doMove(temp, side);
+				 Move *temp2 = new Move(-1, -1);
+				 for (int i = 7; i >= 0; i--)
+				 {
+					 for (int j = 7; j >= 0; j--)
+					 {
+						 temp2->setX(i);
+						 temp2->setY(j);
+						 if (potential->checkMove(temp2, other))
+						 {
+							 if(-(potential->score(temp2, other)) < lowscore)
+							 {
+								lowscore = -potential->score(temp2, other);
+							 }
+					     } 
+					 }
+				 }
+				 delete temp2;
+				 delete potential;
+				 if ((lowscore != 10000) && (lowscore > highscore))
+				 {
+					 highscore = lowscore;
+					 bestX = temp->getX();
+					 bestY = temp->getY();
+				 }
+			 }
+		 }
+	 }
+	 return new Move(bestX, bestY);
+}	 
 
 /*
  * Current count of black stones.

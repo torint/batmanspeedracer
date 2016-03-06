@@ -1,5 +1,7 @@
 #include "player.h"
+#include <ctime>
 
+using namespace std;
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish 
@@ -12,9 +14,7 @@ Player::Player(Side side) {
     color = side;
     if (color == BLACK) {otherColor = WHITE;}
     else {otherColor = BLACK;}
-    std::cerr << "colors initialized" << std::endl;
     ourboard = new Board();
-    std::cerr << "board initialized" << std::endl;
 
     /* 
      * TODO: Do any initialization you need to do here (setting up the board,
@@ -47,51 +47,18 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */ 
-     //std::vector<Move *> ourmoves;
-     std::cerr << "in doMove" << std::endl;
-     ourboard->doMove(opponentsMove, otherColor);
-     std::cerr << "about to check if moves are available" << std::endl;
-     if (ourboard->hasMoves(color))
-	 {
-		 std::cerr << "in for loop" << std::endl;
-		 Move *temp = new Move(-1, -1);
-		 int bestX, bestY;
-		 Board *check;
-		 int highscore = -256;
-		 for (int i = 7; i >= 0; i--)
-		 {
-			 for (int j = 7; j >= 0; j--)
-			 {
-				 temp->setX(i);
-				 temp->setY(j);
-				 if (ourboard->checkMove(temp, color)) //&& ((ourboard->count(color) - ourboard->count(otherColor)) > highscore))
-				 {
-					 std::cerr << color << ": (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
-					 check = ourboard->copy();
-					 check->doMove(temp, color);
-					 if (check->count(color) - check->count(otherColor) > highscore)
-					 {
-						bestX = temp->getX();
-						bestY = temp->getY();
-					    highscore = check->count(color) - check->count(otherColor);
-					 }
-					 //ourboard->doMove(temp, color);
-					 //std::cerr << color << ": (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
-					 //return temp;
-					 
-				 }
-			 }
-			 
-		 }
-		 //delete temp;
-		 //delete check;
-		 temp->setX(bestX);
-		 temp->setY(bestY);
-		 std::cerr << "temphs: (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
-		 ourboard->doMove(temp, color);
-		 return temp;
-	 } 
      
-     std::cerr << "no moves available" << std::endl;
+     clock_t begin = clock(), end;
+     ourboard->doMove(opponentsMove, otherColor);
+     if (ourboard->hasMoves(color))
+     {
+		 Move *move = ourboard->bestmove(color);
+		 ourboard->doMove(move, color);
+		 end = clock();
+		 std::cerr << double(end - begin) / CLOCKS_PER_SEC << "sec" << std::endl;
+		 return move;
+	 }
+	 end = clock();
+	 std::cerr << double(end - begin) / CLOCKS_PER_SEC << "sec" << std::endl;
      return NULL;
 }
