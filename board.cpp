@@ -82,7 +82,7 @@ bool Board::checkMove(Move *m, Side side) {
 
     // Make sure the square hasn't already been taken.
     if (occupied(X, Y)) return false;
-    std::cerr << "not occupied" << std::endl;
+    //std::cerr << "not occupied" << std::endl;
 
     Side other = (side == BLACK) ? WHITE : BLACK;
     for (int dx = -1; dx <= 1; dx++) {
@@ -102,7 +102,7 @@ bool Board::checkMove(Move *m, Side side) {
             }
         }
     }
-    std::cerr << "no capture" << std::endl;
+    //std::cerr << "no capture" << std::endl;
     return false;
 }
 
@@ -152,6 +152,12 @@ void Board::doMove(Move *m, Side side) {
 int Board::count(Side side) {
     return (side == BLACK) ? countBlack() : countWhite();
 }
+
+int Board::score(Move *m, Side side)
+{
+	int base_score = (side == BLACK) ? (countBlack() - countWhite()) : (countWhite() - countBlack());
+}
+	 
 
 /*
  * Current count of black stones.

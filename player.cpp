@@ -47,33 +47,51 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */ 
-     //dragons are really 
+     //std::vector<Move *> ourmoves;
      std::cerr << "in doMove" << std::endl;
      ourboard->doMove(opponentsMove, otherColor);
-     //std::cerr << otherColor << ": (" << opponentsMove->getX() << ", " << opponentsMove->getY() << ")" << std::endl;
      std::cerr << "about to check if moves are available" << std::endl;
      if (ourboard->hasMoves(color))
 	 {
 		 std::cerr << "in for loop" << std::endl;
 		 Move *temp = new Move(-1, -1);
-		 for (int i = 0; i < 8; i++)
+		 int bestX, bestY;
+		 Board *check;
+		 int highscore = -256;
+		 for (int i = 7; i >= 0; i--)
 		 {
-			 for (int j = 0; j < 8; j++)
+			 for (int j = 7; j >= 0; j--)
 			 {
 				 temp->setX(i);
 				 temp->setY(j);
-				 std::cerr << "i:" << i << "j:" << j << ourboard->checkMove(temp, color) << std::endl;
-				 //if (ourboard.checkMove(temp, color))
-				 //{
-				//	 ourboard.doMove(temp, color);
-				//	 std::cerr << color << ": (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
-				//	 return temp;
-				 //}
+				 if (ourboard->checkMove(temp, color)) //&& ((ourboard->count(color) - ourboard->count(otherColor)) > highscore))
+				 {
+					 std::cerr << color << ": (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
+					 check = ourboard->copy();
+					 check->doMove(temp, color);
+					 if (check->count(color) - check->count(otherColor) > highscore)
+					 {
+						bestX = temp->getX();
+						bestY = temp->getY();
+					    highscore = check->count(color) - check->count(otherColor);
+					 }
+					 //ourboard->doMove(temp, color);
+					 //std::cerr << color << ": (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
+					 //return temp;
+					 
+				 }
 			 }
 			 
 		 }
+		 //delete temp;
+		 //delete check;
+		 temp->setX(bestX);
+		 temp->setY(bestY);
+		 std::cerr << "temphs: (" << temp->getX() << ", " << temp->getY() << ")" << std::endl;
+		 ourboard->doMove(temp, color);
+		 return temp;
 	 } 
      
-     std::cerr << "FUCK" << std::endl;
+     std::cerr << "no moves available" << std::endl;
      return NULL;
 }
