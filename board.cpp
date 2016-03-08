@@ -1,7 +1,8 @@
 #include "board.h"
-#define CORNER (3)
-#define ADJ (-2)
-#define EDGE (1)
+#define CORNER (0)
+#define ADJC (0)
+#define EDGE (0)
+#define ADJE (0)
 /*
  * Make a standard 8x8 othello board and initialize it to the standard setup.
  */
@@ -187,11 +188,11 @@ int Board::score(Move *m, Side side)
 				{
 					if(check->get(side, i, j))
 					{
-						base_score = base_score + ADJ;
+						base_score = base_score + ADJC;
 					}
 					else
 					{
-						base_score = base_score - ADJ;
+						base_score = base_score - ADJC;
 					}
 				}
 			}
@@ -209,7 +210,22 @@ int Board::score(Move *m, Side side)
 						base_score = base_score - EDGE;
 					}
 				}
-			}			
+			}	
+			//adjacent to edges
+			else if( ((i == 0) || (i == 1) || (i == 6) || (i == 7)) || ((j == 0) || (j == 1) || (j == 6) || (j == 7)) )
+			{
+				if(check->occupied(i, j))
+				{
+					if(check->get(side, i, j))
+					{
+						base_score = base_score + ADJE;
+					}
+					else
+					{
+						base_score = base_score - ADJE;
+					}
+				}
+			}		
 		}
 	}
 	delete check;
@@ -222,40 +238,41 @@ Move* Board::bestmove(Side side)
 	 Side other = (side == BLACK) ? WHITE : BLACK;
 	 int bestX, bestY;
 	 int highscore = -10000;
-	 for (int i = 7; i >= 0; i--)
+	 for (int i = 0; i < 8; i++)
 	 {
-		 for (int j = 7; j >= 0; j--)
+		 for (int j = 0; j < 8; j++)
 		 {
 			 temp->setX(i);
 			 temp->setY(j);
-			 if (checkMove(temp, side)) 
+			 if (this->checkMove(temp, side)) 
 			 {
-				 int lowscore = 10000;
-				 Board *potential = copy();
+				 Board *potential = this->copy();
 				 potential->doMove(temp, side);
 				 Move *temp2 = new Move(-1, -1);
-				 for (int i = 7; i >= 0; i--)
+				 int lowscore = 10000;
+				 for (int k = 0; k < 8; k++)
 				 {
-					 for (int j = 7; j >= 0; j--)
+					 for (int l = 0; l < 8; l++)
 					 {
-						 temp2->setX(i);
-						 temp2->setY(j);
+						 temp2->setX(k);
+						 temp2->setY(l);
 						 if (potential->checkMove(temp2, other))
 						 {
-							 if(-(potential->score(temp2, other)) < lowscore)
+							 int score = -(potential->score(temp2, other));
+							 if(score < lowscore)
 							 {
-								lowscore = -potential->score(temp2, other);
+								lowscore = score;
 							 }
 					     } 
 					 }
 				 }
 				 delete temp2;
 				 delete potential;
-				 if ((lowscore != 10000) && (lowscore > highscore))
+				 if (lowscore > highscore)
 				 {
 					 highscore = lowscore;
-					 bestX = temp->getX();
-					 bestY = temp->getY();
+					 bestX = i;
+					 bestY = j;
 				 }
 			 }
 		 }

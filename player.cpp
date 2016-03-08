@@ -10,17 +10,28 @@ using namespace std;
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
+    ourboard = new Board();
     
     color = side;
     if (color == BLACK) {otherColor = WHITE;}
     else {otherColor = BLACK;}
-    ourboard = new Board();
+    
 
     /* 
      * TODO: Do any initialization you need to do here (setting up the board,
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
+}
+
+Player::Player(Side side, Board *b)
+{
+	testingMinimax = true;
+    ourboard = b;
+    
+    color = side;
+    if (color == BLACK) {otherColor = WHITE;}
+    else {otherColor = BLACK;}
 }
 
 /*
