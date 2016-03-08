@@ -1,8 +1,8 @@
 #include "board.h"
-#define CORNER (0)
-#define ADJC (0)
-#define EDGE (0)
-#define ADJE (0)
+#define CORNER (4)
+#define ADJC (-3)
+#define EDGE (2)
+#define ADJE (-2)
 /*
  * Make a standard 8x8 othello board and initialize it to the standard setup.
  */
